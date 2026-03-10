@@ -88,7 +88,7 @@
                     const board = $('#guess-board');
                     board.empty();
                     for (const letter of data.letters) {
-                        board.append(`<div class="cell" id="${letter}">${letter}</div>`);
+                        board.append(`<button class="cell" id="${letter}">${letter}</button>`);
                     }
                     
                     board.find('.cell').click(function() {
@@ -114,6 +114,7 @@
             function resetCells() {
                 $('#guess-board .cell').removeClass('correct wrong');
                 $('#game-board .word').removeClass('won lost');
+
             }
 
         });

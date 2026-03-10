@@ -37,6 +37,16 @@
     font-size: 24px;
     font-weight: bold;
 }
+.cell:focus{
+    background-color: rgb(0, 59, 122);
+    color: rgba(255, 255, 255, 0.801);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.26);
+}
+.cell:hover {
+    background-color: rgb(0, 59, 122);
+    color: rgba(255, 255, 255, 0.801);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.26);
+}
 
 .cell.correct {
     background-color: #8f8; /* light green */
