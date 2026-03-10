@@ -4,10 +4,19 @@ import random
 
 app = Flask(__name__)
 
+def get_words(filepath="woorden.txt"):
+    with open(filepath, "r") as read_file:
+        words = read_file.read()
+        words = words.split("\n")
+        return words
+
+def write_word(word, filepath="woorden.txt"):
+    with open(filepath, "a") as write_file:
+            write_file.write(f"\n{word}")
 
 class Galgje:
     def __init__(self):
-        self.words = ["python", "flask", "programming", "development"]
+        self.words = get_words()
         self.current_word = ""
         self.guessed_letters = ""
         self.levens = 6
