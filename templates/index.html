@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galgje</title>
+    <link rel="stylesheet" href= "{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+    <h1>Galgje</h1>
+    <p>Welkom bij Galgje! Probeer het woord te raden voordat de galg compleet is.</p>
+
+    <div id="game-board">
+        <div class="word">
+        <h3>
+        {% for symbol in game_state.display_word %}
+            {{symbol}}
+        {% endfor %}
+        </h3>
+        </div>
+    </div>
+
+    <p>Raad een letter:</p>
+    <div id="guess-board">
+        {% for letter in game_state.letters %}
+            <button class="cell" id="{{ letter }}">{{ letter }}</button>
+        {% endfor %}
+    </div>
+
+    <p>Al geraden letters: <span id="guessed-letters"></span></p>
+    <div id="status-message"></div>
+    <div class=restart-btn><button id="restart-btn">Start Nieuw Spel</button></div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#guess-board .cell').click(function() {
+                const letter = $(this).text();
+                const cell = $(this);
+                
+                $.post('/guess', { letter: letter }, function(data) {
+                    updateDisplay(data, letter, cell);
+                    
+                });
+            });
+
+            $('#restart-btn').click(function() {
+                $.post('/restart', function(data) {
+                    updateDisplay(data);
+                    resetCells();
+                });
+            });
+
+            function updateDisplay(data, lastLetter, lastCell) {
+                // show the current guessed letters and word
+                $('#guessed-letters').text(data.guessed);
+                const spaced = data.display_word.split('').join(' ');
+                
+                $('#game-board .word h3').text(spaced);
+
+                // if this update came from a guess, mark cell
+                if (lastLetter && lastCell) {
+                    
+                    if (data.display_word.indexOf(lastLetter) !== -1) {
+                        lastCell.addClass('correct');
+                    } else {
+                        lastCell.addClass('wrong');
+                    }
+                    lastCell.off('click');
+                }
+
+                // remaining lives or game over message
+                if (data.status === "won") {
+                    $('#status-message').text("Gewonnen!");
+                } else if (data.status === "lost") {
+                    $('#status-message').text(`Verloren! Het woord was: ${data.full_word}`);
+                } else {
+                    $('#status-message').text(`Restende levens: ${data.levens}`);
+                }
+
+                // rebuild guess board letters when restarting
+                if (!lastLetter) {
+                    
+                    // data.letters contains remaining letters for a fresh game
+                    const board = $('#guess-board');
+                    board.empty();
+                    for (const letter of data.letters) {
+                        board.append(`<div class="cell" id="${letter}">${letter}</div>`);
+                    }
+                    
+                    board.find('.cell').click(function() {
+                        const letter = $(this).text();
+                        const cell = $(this);
+                        $.post('/guess', { letter: letter }, function(d) {
+                            updateDisplay(d, letter, cell);
+                        });
+                    });
+                }
+
+                // disable all guesses if game over and add styling
+                if (data.status !== "playing") {
+                    $('#guess-board .cell').off('click');
+                    if (data.status === "won") {
+                        $('#game-board .word').addClass("won");
+                    } else if (data.status === "lost") {
+                        $('#game-board .word').addClass("lost");
+                    }
+                }
+            }
+
+            function resetCells() {
+                $('#guess-board .cell').removeClass('correct wrong');
+                $('#game-board .word').removeClass('won lost');
+            }
+
+        });
+    </script>
+</body>
+</html>
