@@ -70,10 +70,14 @@ galgje_game = Galgje()
 
 @app.route("/")
 def index():
+    return render_template("index.html")
+
+@app.route("/galgje")
+def galgje():
     print(galgje_game.get_status())
     if galgje_game.get_status() != "playing":
         galgje_game.start_game()
-    return render_template("index.html", game_state=galgje_game.get_game_state())
+    return render_template("galgje.html", game_state=galgje_game.get_game_state())
 
 @app.route("/guess", methods=["POST"])
 def guess():
@@ -91,4 +95,4 @@ def restart():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

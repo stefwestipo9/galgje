@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="site">
+    <h1>Galgje</h1>
+    <p>Welkom bij Galgje! Probeer het woord te raden voordat je levens op zijn.</p>
+
+ 
+    <div id="word">
+        <h3>
+        {% for symbol in game_state.display_word %}
+            {{symbol}}
+        {% endfor %}
+        </h3>
+    </div>
+
+    <p>Raad een letter:</p>
+    <div id="guess-board">
+        {% for letter in game_state.letters %}
+            <button class="cell" id="{{ letter }}">{{ letter }}</button>
+        {% endfor %}
+    </div>
+
+    <p>Al geraden letters: <span id="guessed-letters"></span></p>
+    <div id="status-message">Resterende levens {{game_state.levens}}</div>
+    <button id="restart-btn">Start Nieuw Spel</button>
+</div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#guess-board .cell').click(function() {
+                const letter = $(this).text();
+                const cell = $(this);
+                
+                $.post('/guess', { letter: letter }, function(data) {
+                    updateDisplay(data, letter, cell);
+                    
+                });
+            });
+
+            $('#restart-btn').click(function() {
+                $.post('/restart', function(data) {
+                    updateDisplay(data);
+                    resetCells();
+                });
+            });
+
+            function updateDisplay(data, lastLetter, lastCell) {
+                // show the current guessed letters and word
+                $('#guessed-letters').text(data.guessed);
+                const spaced = data.display_word.split('').join(' ');
+                
+                $('#word h3').text(spaced);
+
+                // if this update came from a guess, mark cell
+                if (lastLetter && lastCell) {
+                    
+                    if (data.display_word.indexOf(lastLetter) !== -1) {
+                        lastCell.addClass('correct');
+                    } else {
+                        lastCell.addClass('wrong');
+                    }
+                    lastCell.off('click');
+                }
+
+                // remaining lives or game over message
+                if (data.status === "won") {
+                    $('#status-message').text("Gewonnen!");
+                } else if (data.status === "lost") {
+                    $('#status-message').text(`Verloren! Het woord was: ${data.full_word}`);
+                } else {
+                    $('#status-message').text(`Restende levens: ${data.levens}`);
+                }
+
+                // rebuild guess board letters when restarting
+                if (!lastLetter) {
+                    
+                    // data.letters contains remaining letters for a fresh game
+                    const board = $('#guess-board');
+                    board.empty();
+                    for (const letter of data.letters) {
+                        board.append(`<button class="cell" id="${letter}">${letter}</button>`);
+                    }
+                    
+                    board.find('.cell').click(function() {
+                        const letter = $(this).text();
+                        const cell = $(this);
+                        $.post('/guess', { letter: letter }, function(d) {
+                            updateDisplay(d, letter, cell);
+                        });
+                    });
+                }
+
+                // disable all guesses if game over and add styling
+                if (data.status !== "playing") {
+                    $('#guess-board .cell').off('click');
+                    if (data.status === "won") {
+                        $('#word').addClass("won");
+                    } else if (data.status === "lost") {
+                        $('#word').addClass("lost");
+                    }
+                }
+            }
+
+            function resetCells() {
+                $('#guess-board .cell').removeClass('correct wrong');
+                $('#word').removeClass('won lost');
+
+            }
+
+        });
+    </script>
+
+{% endblock %}
