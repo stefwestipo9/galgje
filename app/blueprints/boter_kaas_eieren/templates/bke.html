@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="{{ url_for('bke.static', filename='styles.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1>Tic Tac Toe</h1>
+        <div id="game-board">
+            {% for i in range(9) %}
+                <div class="cell" id="{{ i }}"></div>
+            {% endfor %}
+        </div>
+        <div id="status-message"></div>
+        <button id="restart_btn">restart game</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        
+        $(document).ready(function() {
+            $('.cell').click(function() {
+                var position = parseInt($(this).attr('id'))
+                makeMove(position);
+            });
+            updateBoard({{ board | tojson }})
+
+
+            $.ajax({
+                url:'/bke/reset',
+                method: 'POST',
+                contentType: 'application/json',
+                success: function(data) {
+                    updateBoard(data.board);
+                }
+            })
+        });
+
+        function makeMove(position) {
+            $.ajax({
+                url:'/bke/make_move', 
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({'position': position}),
+                success: function(data) {
+                    if (data.status === 'success') {
+                        updateBoard(data.board);
+                        if (data.winner) {
+                            if (data.winner == "Tie") {
+                                $('#status-message').text("Spel beeindigd in een " + data.winner);    
+                            } else {
+                                $('#status-message').text("Winnaar: " + data.winner);
+                            }
+                            highlightWinner(data.winning_combination)
+                        }
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            });
+        }
+    
+        function highlightWinner(winningCombination) {
+            $(".cell").removeClass('winner');
+            winningCombination.forEach(function(position) {
+                $("#" + position).addClass("winner");
+            });
+        }
+
+        function updateBoard(board) {
+            $(".cell").each(function(index) {
+                $(this).text(board[index])
+            });
+        }
+
+        $("#restart_btn").on("click", function() {
+            $.ajax({
+                url: '/bke/reset',
+                method: "POST",
+                contentType: 'application/json',
+                success: function(data) {
+                    $('.cell').text('');
+                    $('.cell').removeClass('winner');
+                    $('#status-message').text('');
+                }
+            });
+        })
+
+    </script>
+{% endblock %}

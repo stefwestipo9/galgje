@@ -1,2 +1,9 @@
 /.venv
 /functions.py
+
+app/blueprints/boter_kaas_eieren/__pycache__/bke.cpython-310.pyc
+app/blueprints/boter_kaas_eieren/__pycache__/bke.cpython-313.pyc
+app/blueprints/hangman/__pycache__/galgje.cpython-310.pyc
+
+app/__pycache__/innit.cpython-313.pyc
+app/__pycache__/innit.cpython-310.pyc
