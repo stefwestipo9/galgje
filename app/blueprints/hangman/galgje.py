@@ -1,16 +1,20 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Blueprint, render_template, jsonify, request
 import random
 
 
-app = Flask(__name__)
+Hangman = Blueprint(
+    "galgje", 
+    __name__, 
+    url_prefix="/hangman", 
+    template_folder="templates")
 
-def get_words(filepath="woorden.txt"):
+def get_words(filepath="app/blueprints/hangman/woorden.txt"):
     with open(filepath, "r") as read_file:
         words = read_file.read()
         words = words.split("\n")
         return words
 
-def write_word(word, filepath="woorden.txt"):
+def write_word(word, filepath="app/blueprints/hangman/woorden.txt"):
     with open(filepath, "a") as write_file:
             write_file.write(f"\n{word}")
 
@@ -68,18 +72,14 @@ class Galgje:
 
 galgje_game = Galgje()
 
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-@app.route("/galgje")
-def galgje():
+@Hangman.route("/play")
+def play():
     print(galgje_game.get_status())
     if galgje_game.get_status() != "playing":
         galgje_game.start_game()
     return render_template("galgje.html", game_state=galgje_game.get_game_state())
 
-@app.route("/guess", methods=["POST"])
+@Hangman.route("/guess", methods=["POST"])
 def guess():
     # receive the guessed letter from the POST body
     letter = request.form.get("letter", "").lower()
@@ -88,11 +88,9 @@ def guess():
     return jsonify(galgje_game.get_game_state())
 
 
-@app.route("/restart", methods=["POST"])
+@Hangman.route("/restart", methods=["POST"])
 def restart():
     galgje_game.restart_game()
     return jsonify(galgje_game.get_game_state())
 
 
-if __name__ == "__main__":
-    app.run(debug=True, port=5001)

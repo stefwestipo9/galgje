@@ -31,14 +31,14 @@
                 const letter = $(this).text();
                 const cell = $(this);
                 
-                $.post('/guess', { letter: letter }, function(data) {
+                $.post('/hangman/guess', { letter: letter }, function(data) {
                     updateDisplay(data, letter, cell);
                     
                 });
             });
 
             $('#restart-btn').click(function() {
-                $.post('/restart', function(data) {
+                $.post('/hangman/restart', function(data) {
                     updateDisplay(data);
                     resetCells();
                 });
@@ -84,7 +84,7 @@
                     board.find('.cell').click(function() {
                         const letter = $(this).text();
                         const cell = $(this);
-                        $.post('/guess', { letter: letter }, function(d) {
+                        $.post('/hangman/guess', { letter: letter }, function(d) {
                             updateDisplay(d, letter, cell);
                         });
                     });
