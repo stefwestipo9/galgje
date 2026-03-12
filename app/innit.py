@@ -1,6 +1,6 @@
 from flask import Flask, sessions, render_template
 
-from .blueprints import main
+from .blueprints.homepage import main
 from app.blueprints.hangman import galgje
 
 def create_app():

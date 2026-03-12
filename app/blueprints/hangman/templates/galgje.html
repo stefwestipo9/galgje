@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
+{% block head %}
+<title>Galgje</title>
+<link rel="stylesheet" href= "{{ url_for('galgje.static', filename='styles.css') }}">
+{% endblock %}
 {% block content %}
-<div id="site">
+<div id="galgje">
     <h1>Galgje</h1>
     <p>Welkom bij Galgje! Probeer het woord te raden voordat je levens op zijn.</p>
 

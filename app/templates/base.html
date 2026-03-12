@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Small Games</title>
-    <link rel="stylesheet" href= "{{ url_for('static', filename='styles.css') }}">
+    {% block head %}{% endblock %}
 </head>
 <body>
 <header>
-    <h1>MiniGames</h1>
+    <h1>Mini Games</h1>
     <nav>
         <a href="{{url_for('index')}}">Home</a>|
         <a href="{{url_for('galgje.play')}}">Galgje </a>|

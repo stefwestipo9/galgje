@@ -6,7 +6,8 @@ Hangman = Blueprint(
     "galgje", 
     __name__, 
     url_prefix="/hangman", 
-    template_folder="templates")
+    template_folder="templates",
+    static_folder="static")
 
 def get_words(filepath="app/blueprints/hangman/woorden.txt"):
     with open(filepath, "r") as read_file:
@@ -24,7 +25,7 @@ class Galgje:
         self.current_word = ""
         self.guessed_letters = ""
         self.levens = 6
-        self.letters = 'abcdefghijklmnopqrstuvwxyz'
+        self.letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         self.status = None
 
     def start_game(self):
@@ -36,12 +37,13 @@ class Galgje:
         else:
             # 2. Bij opstarten hoeft niet gecontroleerd te worden op nieuwe woord
             self.current_word = random.choice(self.words)
-
+        self.current_word = self.current_word.upper()
         self.guessed_letters = ""
         self.levens = 6
         self.status = "playing"
     
     def guess_letter(self, letter):
+        letter = letter.upper()
         if letter not in self.guessed_letters:
             self.guessed_letters += letter
             if letter not in self.current_word:
