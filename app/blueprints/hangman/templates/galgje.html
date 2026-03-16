@@ -8,7 +8,6 @@
     <h1>Galgje</h1>
     <p>Welkom bij Galgje! Probeer het woord te raden voordat je levens op zijn.</p>
 
- 
     <div id="word">
         <h3>
         {% for symbol in game_state.display_word %}
@@ -20,11 +19,17 @@
     <p>Raad een letter:</p>
     <div id="guess-board">
         {% for letter in game_state.letters %}
-            <button class="cell" id="{{ letter }}">{{ letter }}</button>
+            {# Mark already guessed letters with the correct/wrong class and disable them so refresh keeps the state #}
+            {% set guessed = letter in game_state.guessed %}
+            {% set correct = guessed and (letter in game_state.display_word) %}
+            <button class="cell{% if guessed %} {% if correct %}correct{% else %}wrong{% endif %}{% endif %}"
+                    id="{{ letter }}" {% if guessed %}disabled{% endif %}>
+                {{ letter }}
+            </button>
         {% endfor %}
     </div>
 
-    <p>Al geraden letters: <span id="guessed-letters"></span></p>
+    <p>Al geraden letters: <span id="guessed-letters">{{ game_state.guessed }}</span></p>
     <div id="status-message">Resterende levens {{game_state.levens}}</div>
     <button id="restart-btn">Start Nieuw Spel</button>
 </div>
@@ -32,13 +37,17 @@
     <script>
         $(document).ready(function() {
             $('#guess-board .cell').click(function() {
-                const letter = $(this).text();
+                const letter = $(this).text().trim();
                 const cell = $(this);
                 
                 $.post('/hangman/guess', { letter: letter }, function(data) {
                     updateDisplay(data, letter, cell);
-                    
                 });
+            });
+
+            // Disable and detach click handlers for any already-guessed letters (persisted on reload)
+            $('#guess-board .cell.correct, #guess-board .cell.wrong').each(function() {
+                $(this).prop('disabled', true).off('click');
             });
 
             $('#restart-btn').click(function() {
@@ -57,13 +66,13 @@
 
                 // if this update came from a guess, mark cell
                 if (lastLetter && lastCell) {
-                    
-                    if (data.display_word.indexOf(lastLetter) !== -1) {
+                    const normalized = lastLetter.trim();
+                    if (data.display_word.indexOf(normalized) !== -1) {
                         lastCell.addClass('correct');
                     } else {
                         lastCell.addClass('wrong');
                     }
-                    lastCell.off('click');
+                    lastCell.prop('disabled', true).off('click');
                 }
 
                 // remaining lives or game over message
