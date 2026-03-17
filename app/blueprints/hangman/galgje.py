@@ -76,7 +76,6 @@ galgje_game = Galgje()
 
 @Hangman.route("/play")
 def play():
-    print(galgje_game.get_status())
     if galgje_game.get_status() != "playing":
         galgje_game.start_game()
     return render_template("galgje.html", game_state=galgje_game.get_game_state())
@@ -94,5 +93,3 @@ def guess():
 def restart():
     galgje_game.restart_game()
     return jsonify(galgje_game.get_game_state())
-
-

@@ -29,7 +29,6 @@
         {% endfor %}
     </div>
 
-    <p>Al geraden letters: <span id="guessed-letters">{{ game_state.guessed }}</span></p>
     <div id="status-message">Resterende levens {{game_state.levens}}</div>
     <button id="restart-btn">Start Nieuw Spel</button>
 </div>
@@ -66,13 +65,13 @@
 
                 // if this update came from a guess, mark cell
                 if (lastLetter && lastCell) {
-                    const normalized = lastLetter.trim();
-                    if (data.display_word.indexOf(normalized) !== -1) {
+                    
+                    if (data.display_word.indexOf(lastLetter) !== -1) {
                         lastCell.addClass('correct');
                     } else {
                         lastCell.addClass('wrong');
                     }
-                    lastCell.prop('disabled', true).off('click');
+                    lastCell.off('click');
                 }
 
                 // remaining lives or game over message
@@ -117,9 +116,7 @@
             function resetCells() {
                 $('#guess-board .cell').removeClass('correct wrong');
                 $('#word').removeClass('won lost');
-
             }
-
         });
     </script>
 
