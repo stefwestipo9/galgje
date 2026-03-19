@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
 <div id="galgje">
-    <h1>Galgje</h1>
+    <h2>Galgje</h2>
     <p>Welkom bij Galgje! Probeer het woord te raden voordat je levens op zijn.</p>
 
     <div id="word">
@@ -19,7 +19,6 @@
     <p>Raad een letter:</p>
     <div id="guess-board">
         {% for letter in game_state.letters %}
-            {# Mark already guessed letters with the correct/wrong class and disable them so refresh keeps the state #}
             {% set guessed = letter in game_state.guessed %}
             {% set correct = guessed and (letter in game_state.display_word) %}
             <button class="cell{% if guessed %} {% if correct %}correct{% else %}wrong{% endif %}{% endif %}"

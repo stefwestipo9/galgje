@@ -29,14 +29,9 @@ class Galgje:
         self.status = None
 
     def start_game(self):
-        if self.current_word:
-            # 1. Bij nieuwe spel een ander woord pakken
-            choices = [word for word in self.words if word != self.current_word]
-            self.current_word = random.choice(choices) if choices else random.choice(self.words)
+        choices = [word for word in self.words if word != self.current_word]
+        self.current_word = random.choice(choices) if choices else random.choice(self.words)
         
-        else:
-            # 2. Bij opstarten hoeft niet gecontroleerd te worden op nieuwe woord
-            self.current_word = random.choice(self.words)
         self.current_word = self.current_word.upper()
         self.guessed_letters = ""
         self.levens = 6
