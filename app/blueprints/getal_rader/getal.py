@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, jsonify, request
 import random
 
+# Bluprint maken
 Bagel = Blueprint(
     "getal",
     __name__,
@@ -17,14 +18,14 @@ class getal_raden():
     per plek 1 van deze 3 terug. 
     """
     def __init__(self):
+        self.getal_lengte = 3
         self.getal = None
         self.levens = 6
         self.status = None
         self.guesses = {"getallen":[], "uitkomsten":[]}
         
-
     def genereer_getal(self):
-        getal = random.randrange(0,1000)
+        getal = random.randrange(0, 10**self.getal_lengte)
         getal = '{:03}'.format(getal)
         return getal
 
@@ -48,7 +49,6 @@ class getal_raden():
         self.genereeer_uniek_getal()
         self.guesses = 6
         self.status = "playing"
-        self.guesses = []
         self.guesses = {"getallen":[], "uitkomsten":[]}
     
     def raden(self, guess):
@@ -79,10 +79,15 @@ class getal_raden():
                 self.guesses["uitkomsten"].append(message)
         
     def get_game_state(self):
-        pass
+        data = {
+            "status": self.status,
+            "levens": self.levens,
+            "geraden": self.guesses["getallen"],
+            "uitkomsten": self.guesses["uitkomsten"]
+        }
+        return data
 
 
-    
 spel = getal_raden()
 
 
@@ -90,12 +95,16 @@ spel = getal_raden()
 def play():
     if spel.status != "playing":
         spel.start_spel()
-    render_template("getal.html")
+    return render_template("getal.html", game_state = spel.get_game_state())
 
 @Bagel.route("/guess")
 def guess():
-    return spel.raden()
+    guess = request.form.get("guess")
+    if guess:
+        spel.raden(guess)
+    return jsonify(spel.get_game_state())
 
 @Bagel.route("/restart")
 def restart():
     spel.start_spel()
+    return jsonify(spel.get_game_state())

@@ -1,2 +1,65 @@
-{% extend 'base.html' %}
-{}
+{% extends 'base.html' %}
+{% block head %}
+<title>Bagel</title>
+<link rel="stylesheet" href= "{{ url_for('getal.static', filename='styles.css') }}">
+{% endblock %}
+
+{% block content %}
+<p><h2>Bagel</h2>
+<table>
+    <tr>
+        <td>Bagel</td>
+        <td>Onjuist Cijfer</td>
+    </tr>
+    <tr>
+        <td>Pico</td>
+        <td>Onjuiste Plek</td>
+    </tr>
+    <tr>
+        <td>Fermi</td>
+        <td>Juiste Plek</td>
+    </tr>
+</table>
+<div class="container">
+    <div class="text">
+        Raad een 3 cijferig getal.
+    </div>
+    <div class="guess">
+        {% for i in range(3) %}
+        <select>
+        {% for i in range(10) %}
+        <option value="{{i}}">{{i}}</option>
+        {% endfor %}
+        </select>
+        {% endfor %}
+        <button class="submit" value="submit" name="submit">submit</button>
+    </div>
+    <br><br>
+    <button id="restart-btn">Start Nieuw Spel</button>
+    <div class="display">
+        <table>
+        {% for i in range(6 - game_state.levens) %}
+            <tr>
+                <td>{{game_state.geraden[i]}}</td>
+                <td>{{game_state.uitkomsten[i]}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
+</p>
+{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    $(document).ready(function() {
+
+    
+        $('#restart-btn').click(function() {
+                    $.post('/getal/restart', function(data) {
+                        updateDisplay(data);
+                    });
+                });
+    })
+</script>
