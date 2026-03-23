@@ -88,9 +88,6 @@
                 } 
             
             if (data.status === 'playing') {
-        
-                // show the updated secret number for debugging
-                $('#getal-display').text(data.getal);
                 $('#status-message').text("Resterende Pogingen: " + data.levens)
                 $('select').val('0');
             }
@@ -100,7 +97,7 @@
                     $('#status-message').text("Je hebt het geraden!")
                 }
                 else if (data.status == 'lost') {
-                    $('#status-message').text("Je hebt verloren")
+                    $('#status-message').text("Je hebt verloren, het getal was " + data.getal)
                 };
             }
         }

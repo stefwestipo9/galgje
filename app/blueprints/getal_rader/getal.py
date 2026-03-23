@@ -84,14 +84,12 @@ class getal_raden():
             "levens": self.levens,
             "geraden": self.guesses["getallen"],
             "uitkomsten": self.guesses["uitkomsten"],
-            # temp for testing
-            "getal": self.getal
         }
+        if self.status != 'playing':
+            data["getal"] = self.getal
         return data
 
-
 spel = getal_raden()
-
 
 @Bagel.route("/play")
 def play():
