@@ -47,12 +47,12 @@ class getal_raden():
     
     def start_spel(self):
         self.genereeer_uniek_getal()
-        self.guesses = 6
+        self.levens = 6
         self.status = "playing"
         self.guesses = {"getallen":[], "uitkomsten":[]}
     
     def raden(self, guess):
-        messgae = []
+        message = []
         if self.status == "playing":
             self.guesses["getallen"].append(guess)
             # checken of het juiste getal geraden is
@@ -83,7 +83,9 @@ class getal_raden():
             "status": self.status,
             "levens": self.levens,
             "geraden": self.guesses["getallen"],
-            "uitkomsten": self.guesses["uitkomsten"]
+            "uitkomsten": self.guesses["uitkomsten"],
+            # temp for testing
+            "getal": self.getal
         }
         return data
 
@@ -97,14 +99,14 @@ def play():
         spel.start_spel()
     return render_template("getal.html", game_state = spel.get_game_state())
 
-@Bagel.route("/guess")
+@Bagel.route("/guess", methods=["POST"])
 def guess():
     guess = request.form.get("guess")
     if guess:
         spel.raden(guess)
     return jsonify(spel.get_game_state())
 
-@Bagel.route("/restart")
+@Bagel.route("/restart", methods=["POST"])
 def restart():
     spel.start_spel()
     return jsonify(spel.get_game_state())

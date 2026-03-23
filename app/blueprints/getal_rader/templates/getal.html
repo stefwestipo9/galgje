@@ -23,19 +23,22 @@
 <div class="container">
     <div class="text">
         Raad een 3 cijferig getal.
+        {# temp for checking if things work #}
+        <br>
+        <div id="getal-display" class="getal">{{ game_state.getal }}</div>
     </div>
     <div class="guess">
         {% for i in range(3) %}
-        <select>
+        <select id="{{ i }}">
         {% for i in range(10) %}
         <option value="{{i}}">{{i}}</option>
         {% endfor %}
         </select>
         {% endfor %}
-        <button class="submit" value="submit" name="submit">submit</button>
+        <button id="submit-btn" type="button">submit</button>
     </div>
     <br><br>
-    <button id="restart-btn">Start Nieuw Spel</button>
+
     <div class="display">
         <table>
         {% for i in range(6 - game_state.levens) %}
@@ -46,20 +49,62 @@
         {% endfor %}
         </table>
     </div>
+    <div id="status-message">Resterende levens: {{ game_state.levens }}</div>
+    <button id="restart-btn" type="button"> Restart </button>
 </div>
 </p>
-{% endblock %}
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{{ url_for('getal.static', filename='jquery.min.js') }}"></script>
 <script>
-
     $(document).ready(function() {
+        function submitGuess() {
+            const guess = $('.guess select').map(function() {
+                return $(this).val();
+            }).get().join('');
+            $.post('/getal/guess', {guess: guess}, function(data) {
+                updateDisplay(data);
+            });
+        }
 
+        $('#submit-btn').on('click', submitGuess);
     
         $('#restart-btn').click(function() {
-                    $.post('/getal/restart', function(data) {
-                        updateDisplay(data);
-                    });
-                });
+            $.post('/getal/restart', function(data) {
+                updateDisplay(data);
+                $('#submit-btn').attr("disabled", false)
+            })
+        });
+
+        function updateDisplay(data){
+            console.log(data)
+            $('.display table').empty();
+                for (let i = 0; i < data.geraden.length; i++) {
+                    $('.display table').append(`
+                        <tr>
+                            <td>${data.geraden[i]}</td>
+                            <td>${data.uitkomsten[i].join(', ')}</td>
+                        </tr>
+                    `);
+                } 
+            
+            if (data.status === 'playing') {
+        
+                // show the updated secret number for debugging
+                $('#getal-display').text(data.getal);
+                $('#status-message').text("Resterende Pogingen: " + data.levens)
+                $('select').val('0');
+            }
+            if (data.status != 'playing') {
+                $('#submit-btn').attr("disabled", true)
+                if (data.status == 'won') {
+                    $('#status-message').text("Je hebt het geraden!")
+                }
+                else if (data.status == 'lost') {
+                    $('#status-message').text("Je hebt verloren")
+                };
+            }
+        }
+
     })
 </script>
+{% endblock %}

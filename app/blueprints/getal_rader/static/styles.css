@@ -17,3 +17,11 @@ table, th, td {
 .guess{
     text-align: center;
 }
+
+.display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
