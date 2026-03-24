@@ -59,7 +59,6 @@ class getal_raden():
             if guess == self.getal:
                 self.status = "won"
                 message = ["Fermi", "Fermi","Fermi"]
-                self.guesses["uitkomsten"].append(message)
 
             else:
             # Checken of cijfers wel op juist plekken staan
@@ -76,7 +75,7 @@ class getal_raden():
                 self.levens -= 1
                 if self.levens == 0:
                     self.status = "lost"
-                self.guesses["uitkomsten"].append(message)
+            self.guesses["uitkomsten"].append(message)
         
     def get_game_state(self):
         data = {

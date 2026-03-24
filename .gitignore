@@ -9,3 +9,4 @@ app/__pycache__/innit.cpython-313.pyc
 app/__pycache__/innit.cpython-310.pyc
 app/blueprints/hangman/__pycache__/galgje.cpython-313.pyc
 app/blueprints/getal_rader/__pycache__/getal.cpython-313.pyc
+app/blueprints/getal_rader/__pycache__/getal.cpython-313.pyc
